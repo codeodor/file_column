@@ -1,7 +1,7 @@
 module FileColumn
   class Railtie < Rails::Railtie
     initializer "file_column.initialization" do |app|
-      app.config.after_initialize do 
+      app.config.before_initialize do 
         ::FileColumn::ClassMethods::DEFAULT_OPTIONS = {
           :root_path => File.join(Rails.root, "public"),
           :web_root => "",
