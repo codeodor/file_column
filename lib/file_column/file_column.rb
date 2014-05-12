@@ -27,7 +27,11 @@ module FileColumn # :nodoc:
 
     [:store_dir, :tmp_base_dir].each do |dir_sym|
       if options[dir_sym].is_a?(String) and !File.exists?(options[dir_sym])
-        FileUtils.mkpath(options[dir_sym])
+        begin 
+          FileUtils.mkpath(options[dir_sym])
+        rescue
+          # it exists
+        end
       end
     end
 
