@@ -26,12 +26,8 @@ module FileColumn # :nodoc:
     options[:base_url] ||= options[:web_root] + File.join(model, attr)
 
     [:store_dir, :tmp_base_dir].each do |dir_sym|
-      if options[dir_sym].is_a?(String) and !File.exists?(options[dir_sym])
-        begin 
-          FileUtils.mkpath(options[dir_sym])
-        rescue
-          # it exists
-        end
+      if options[dir_sym].is_a?(String) and !(File.exists?(options[dir_sym]) || File.symlink?(options[dir_sym]))
+        FileUtils.mkpath(options[dir_sym])
       end
     end
 
@@ -118,7 +114,7 @@ module FileColumn # :nodoc:
         raise ArgumentError.new("'#{options[:store_dir]}' is not an instance method of class #{@instance.class.name}") unless @instance.respond_to?(options[:store_dir])
 
         dir = File.join(options[:root_path], @instance.send(options[:store_dir]))
-        FileUtils.mkpath(dir) unless File.exists?(dir)
+        FileUtils.mkpath(dir) unless File.exists?(dir) || File.symlink?(dir)
         dir
       else 
         options[:store_dir]
@@ -130,7 +126,7 @@ module FileColumn # :nodoc:
         options[:tmp_base_dir] 
       else
         dir = File.join(store_dir, "tmp")
-        FileUtils.mkpath(dir) unless File.exists?(dir)
+        FileUtils.mkpath(dir) unless File.exists?(dir) || File.symlink?(dir)
         dir
       end
     end
@@ -353,7 +349,7 @@ module FileColumn # :nodoc:
       @dir = File.join(store_dir, relative_path_prefix)
       @filename = @instance[@attr]
       @filename = nil if @filename.empty?
-			FileUtils.mkpath(File.dirname(@dir)) unless File.exists?(File.dirname(@dir))
+			FileUtils.mkpath(File.dirname(@dir)) unless File.exists?(File.dirname(@dir)) || File.symlink?(@dir)
     end
 
     def move_from(local_dir, just_uploaded)
