@@ -7,7 +7,7 @@ module FileColumn # :nodoc:
     super
     base.extend(ClassMethods)
   end
-
+  
   def self.create_state(instance,attr)
     filename = instance[attr]
     if filename.nil? or filename.empty?
@@ -718,4 +718,10 @@ module FileColumn # :nodoc:
   
 end
 
+require 'file_compat'
+require 'file_column_helper'
+require 'validations'
 
+ActiveRecord::Base.send(:include, FileColumn)
+ActionView::Base.send(:include, FileColumnHelper)
+ActiveRecord::Base.send(:include, FileColumn::Validations)
